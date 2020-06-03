@@ -1,7 +1,18 @@
 package main;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
+
 
 public class Client {
 
@@ -11,9 +22,42 @@ public class Client {
     public static ObjectOutputStream outMessage;
 
     private static boolean isExit = false;
+
     public static boolean isClose = false;
 
     public static String clientName;
+
+    private GController controller;
+    private ObservableList<GField> gamesTableFields;
+
+    @FXML
+    private TextField login;
+
+
+    @FXML
+    public void logIn() throws IOException {
+        String msg = "login:" + login.getText();
+        clientName = login.getText();
+        sendMsg(msg);
+    }
+
+    public void startGame() throws Exception{
+        Stage tempStage = (Stage) login.getScene().getWindow();
+        tempStage.hide();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/Lobby.fxml"));
+        Parent root = (Parent) loader.load();
+        controller = loader.getController();
+        Stage primaryStage = new Stage();
+        primaryStage.setTitle("Lobby");
+        primaryStage.setScene(new Scene(root, 400, 600));
+        primaryStage.setOnCloseRequest(windowEvent -> {
+            isClose = true;
+            primaryStage.close();
+        });
+        controller.gamesTableFields = gamesTableFields;
+        controller.initialize();
+        primaryStage.show();
+    }
 
     public void clientWork() throws Exception{
         while (true) {
@@ -22,9 +66,43 @@ public class Client {
             if (bufferedReader.ready()) {
                 Message answer = (Message) inMessage.readObject();
                 System.out.println(answer.msg);
+                if (answer.msg.equals("start")) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                startGame();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+                if (answer.msg.equals("lobbies")) {
+                    List<GField> list = (List<GField>) answer.gamesArray;
+                    if (list != null) {
+                        if (controller != null) {
+                            controller.gamesTableFields = FXCollections.observableArrayList(list);
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        controller.deleteEmptyGame();
+                                        controller.initialize();
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+                        } else {
+                            gamesTableFields = FXCollections.observableArrayList(list);
+                        }
+                    }
+                }
             }
             if (isClose){
-                sendMsg("end");
+                sendMsg("close");
                 outMessage.close();
                 inMessage.close();
                 clientSocket.close();
@@ -42,9 +120,11 @@ public class Client {
                 inMessage = new ObjectInputStream(clientSocket.getInputStream());
                 bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 outMessage = new ObjectOutputStream(clientSocket.getOutputStream());
+                controller = null;
+                gamesTableFields = FXCollections.observableArrayList();
             }
         } catch (IOException e) {
-            System.out.println("Не удалось установить подключение с сервером, проверьте подключение к сети!");
+            System.out.println("Can't connect to server, check network connection.");
         }
 
 
@@ -54,15 +134,15 @@ public class Client {
                 try {
                     clientWork();
                 } catch (Exception e) {
-                    System.out.println("Клиент потерял соединение с сервером!");
+                    System.out.println("Client lost the connection.");
                 }
             }
         }).start();
 
     }
 
-    public void sendMsg(String messageStr) throws IOException {
-        Message message = new Message(messageStr);
+    private void sendMsg(String messageStr) throws IOException {
+        Message message = new Message(messageStr, null);
         outMessage.writeObject(message);
         outMessage.flush();
     }

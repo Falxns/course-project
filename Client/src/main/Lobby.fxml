@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.GController"
+            prefHeight="400.0" prefWidth="600.0">
+    <TableView fx:id="gamesTable" prefWidth="400.0">
+        <columns>
+            <TableColumn prefWidth="150.0" text="Lobbies" fx:id="clientsLobbyColumn" />
+            <TableColumn prefWidth="248.0" text="Players" fx:id="clientsPlayerColumn" />
+        </columns>
+    </TableView>
+
+    <Button layoutX="25.0" layoutY="400.0" onAction="#createGame" text="Create lobby"/>
+    <Button layoutX="325.0" layoutY="400.0" onAction="#joinGame" text="Join lobby"/>
+</AnchorPane>

@@ -11,12 +11,13 @@ public class Server {
 
     static final int PORT = 1488;
     private ObservableList<ClientHandler> clients = FXCollections.observableArrayList();
+    public ObservableList<GField> gamesArray;
     public Server() {
         Socket clientSocket = null;
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Сервер запущен!");
+            System.out.println("Server is running.");
             while (true) {
                 clientSocket = serverSocket.accept();
                 ClientHandler client = new ClientHandler(clientSocket, this);
@@ -32,7 +33,7 @@ public class Server {
                 if (clientSocket != null) {
                     clientSocket.close();
                 }
-                System.out.println("Сервер остановлен");
+                System.out.println("Server stopped.");
                 if (serverSocket != null) {
                     serverSocket.close();
                 }
@@ -43,9 +44,9 @@ public class Server {
         }
     }
 
-    public void sendMessageToAllClients(String msg) {
+    public void sendMessageToAllClients(String msg, ObservableList<GField> gamesList) {
         for (ClientHandler client : clients) {
-            client.sendMsg(msg);
+            client.sendMsg(msg, gamesList);
         }
     }
 

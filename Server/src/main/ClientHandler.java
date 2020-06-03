@@ -1,7 +1,11 @@
 package main;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientHandler implements Runnable {
 
@@ -26,7 +30,7 @@ public class ClientHandler implements Runnable {
             this.inMessage = new ObjectInputStream(socket.getInputStream());
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException ex) {
-            System.out.println("Не удалось установить соединение!");
+            System.out.println("Couldn't connect to server.");
         }
     }
 
@@ -35,7 +39,8 @@ public class ClientHandler implements Runnable {
         try {
             if (!isClose && !clientSocket.isClosed()) {
                 while (true) {
-                    server.sendMessageToAllClients("Новый участник вошёл в игру!");
+                    server.sendMessageToAllClients("New player entered.", server.gamesArray);
+                    server.sendMessageToAllClients("lobbies", server.gamesArray);
                     break;
                 }
             }
@@ -53,27 +58,35 @@ public class ClientHandler implements Runnable {
                         break;
                     }
                     System.out.println(clientMessage.msg);
+                    if (clientMessage.msg.regionMatches(0,"login",0,5))
+                        this.sendMsg("start", null);
+                    if (clientMessage.msg.regionMatches(0,"game",0,4)) {
+                        List<GField> list = (List<GField>) clientMessage.gamesArray;
+                        server.gamesArray = FXCollections.observableList(list);
+
+                        server.sendMessageToAllClients("lobbies", server.gamesArray);
+                    }
                 }
                 Thread.sleep(100);
             }
         }
         catch (InterruptedException | IOException | ClassNotFoundException ex) {
-            System.out.println("Клиент потерял соединение с сервером!");
+            System.out.println("Client lost connection with server.");
         }
         finally {
             this.close();
         }
     }
 
-    public void sendMsg(String msg) {
+    public void sendMsg(String msg, ObservableList<GField> gamesList) {
         try {
             if (!clientSocket.isClosed()) {
-                Message message = new Message(msg);
+                Message message = new Message(msg, gamesList);
                 outMessage.writeObject(message);
                 outMessage.flush();
             }
         } catch (Exception ex) {
-            System.out.println("Клиент потерял соединение с сервером!");
+            System.out.println("Client lost connection with server.");
         }
     }
 
@@ -81,6 +94,6 @@ public class ClientHandler implements Runnable {
         server.removeClient(this);
         clients_count--;
         if (clients_count != 0)
-            server.sendMessageToAllClients("Клиентов в игре = " + clients_count);
+            server.sendMessageToAllClients("Players in game = " + clients_count, null);
     }
 }
