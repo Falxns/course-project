@@ -89,6 +89,7 @@ public class Client {
                                     try {
                                         controller.deleteEmptyGame();
                                         controller.initialize();
+                                        controller.fillLabel();
                                     }catch (Exception e){
                                         e.printStackTrace();
                                     }

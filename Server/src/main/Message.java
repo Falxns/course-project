@@ -1,7 +1,6 @@
 package main;
 
 import javafx.collections.ObservableList;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 

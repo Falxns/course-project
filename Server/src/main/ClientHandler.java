@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
             while (true) {
                 if (!isClose && inMessage != null && outMessage != null && !clientSocket.isClosed()) {
                     Message clientMessage = (Message) inMessage.readObject();
-                    if (clientMessage.msg.equals("end")) {
+                    if (clientMessage.msg.equals("close")) {
                         System.out.println("Exit");
                         isClose = true;
                         clientSocket.close();
@@ -60,7 +60,7 @@ public class ClientHandler implements Runnable {
                     System.out.println(clientMessage.msg);
                     if (clientMessage.msg.regionMatches(0,"login",0,5))
                         this.sendMsg("start", null);
-                    if (clientMessage.msg.regionMatches(0,"game",0,4)) {
+                    if (clientMessage.msg.regionMatches(0,"game_upd",0,7)) {
                         List<GField> list = (List<GField>) clientMessage.gamesArray;
                         server.gamesArray = FXCollections.observableList(list);
 
