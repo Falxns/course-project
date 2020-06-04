@@ -10,7 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 
@@ -115,8 +119,19 @@ public class Client {
 
     public Client(){
         try {
+            byte[] buf = new byte[4];
             if (!isExit) {
-                clientSocket = new Socket("localhost", 1488);
+                DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length, InetAddress.getByName("192.168.100.255"), 7777);
+                DatagramSocket datagramSocket = new DatagramSocket();
+                datagramSocket.send(datagramPacket);
+                datagramSocket.receive(datagramPacket);
+                datagramSocket.close();
+
+                InetAddress address = datagramPacket.getAddress();
+                ByteBuffer byteBuffer = ByteBuffer.wrap(datagramPacket.getData());
+                int port = byteBuffer.getInt();
+
+                clientSocket = new Socket(address, port);
 
                 inMessage = new ObjectInputStream(clientSocket.getInputStream());
                 bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));

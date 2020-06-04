@@ -2,7 +2,6 @@ package main;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,11 +11,13 @@ public class Server {
     static final int PORT = 1488;
     private ObservableList<ClientHandler> clients = FXCollections.observableArrayList();
     public ObservableList<GField> gamesArray;
+    private static UDPMessage connectionListener;
     public Server() {
         Socket clientSocket = null;
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(PORT);
+            connectionListener = new UDPMessage(serverSocket.getLocalPort());
             System.out.println("Server is running.");
             while (true) {
                 clientSocket = serverSocket.accept();
