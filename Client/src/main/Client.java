@@ -53,7 +53,9 @@ public class Client {
         controller = loader.getController();
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Lobby");
-        primaryStage.setScene(new Scene(root, 400, 600));
+        Scene scene = new Scene(root, 400, 600);
+        scene.getStylesheets().add("/styles/lobby.css");
+        primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(windowEvent -> {
             isClose = true;
             primaryStage.close();

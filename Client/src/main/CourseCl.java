@@ -14,7 +14,7 @@ public class CourseCl extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/main/Login.fxml"));
         primaryStage.setTitle("Login");
-        primaryStage.setScene(new Scene(root, 400, 200));
+        primaryStage.setScene(new Scene(root, 320, 150));
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent windowEvent) {

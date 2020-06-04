@@ -3,17 +3,23 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="main.GController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="600.0" prefWidth="400.0">
+    <ImageView fitWidth="400" fitHeight="600">
+        <image>
+            <Image url="@../img/lobby.jpg"></Image>
+        </image>
+    </ImageView>
     <TableView fx:id="gamesTable" prefWidth="400.0">
         <columns>
             <TableColumn prefWidth="150.0" text="Lobbies" fx:id="clientsLobbyColumn" />
-            <TableColumn prefWidth="248.0" text="Players" fx:id="clientsPlayerColumn" />
+            <TableColumn prefWidth="246.0" text="Players" fx:id="clientsPlayerColumn" />
         </columns>
     </TableView>
-
-    <Button layoutX="25.0" layoutY="400.0" onAction="#createGame" text="Create lobby"/>
+    <Button layoutY="400.0" onAction="#createGame" text="Create lobby"/>
     <Button layoutX="325.0" layoutY="400.0" onAction="#joinGame" text="Join lobby"/>
 </AnchorPane>

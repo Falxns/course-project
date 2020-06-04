@@ -1,5 +1,6 @@
 package main;
 
+import javafx.animation.FadeTransition;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -122,22 +124,20 @@ public class GController {
             pane.setTop(mess);
             pane.setCenter(button);
             Scene scene = null;
-            if (mess != null) {
-                scene = new Scene(pane, 100,100);
-                button.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        try {
-                            showMenu(menuStage,gameStage);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        stage.close();
+            scene = new Scene(pane, 100,100);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    try {
+                        showMenu(menuStage,gameStage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                });
-                stage.setScene(scene);
-                stage.show();
-            }
+                    stage.close();
+                }
+            });
+            stage.setScene(scene);
+            stage.show();
         }
     }
 
@@ -223,6 +223,8 @@ public class GController {
             FileInputStream input = new FileInputStream("Client/src/cards/"+ imgNum + ".png");
             Image image = new Image(input, 100, 170, false, true);
             ImageView imageView = new ImageView(image);
+            imageView.setOpacity(0.5);
+            imageView.getStyleClass().add("card");
             Card tempCard = player.hand.get(j);
             imageView.addEventHandler(MouseEvent.MOUSE_CLICKED, (event)-> {
                 try {
@@ -236,6 +238,18 @@ public class GController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            });
+            imageView.addEventHandler(MouseEvent.MOUSE_ENTERED, (event)-> {
+                final FadeTransition fadeIn = new FadeTransition(Duration.millis(100));
+                fadeIn.setNode(imageView);
+                fadeIn.setToValue(1);
+                fadeIn.playFromStart();
+            });
+            imageView.addEventHandler(MouseEvent.MOUSE_EXITED, (event)-> {
+                final FadeTransition fadeOut= new FadeTransition(Duration.millis(100));
+                fadeOut.setNode(imageView);
+                fadeOut.setToValue(0.5);
+                fadeOut.playFromStart();
             });
             handPane.getChildren().add(imageView);
         }
@@ -280,7 +294,7 @@ public class GController {
             stage.close();
         });
         flowPane.getChildren().add(okButton);
-        Scene scene = new Scene(flowPane, 100, 200);
+        Scene scene = new Scene(flowPane, 200, 50);
         stage.setScene(scene);
         stage.setTitle("Choose value");
         stage.show();
@@ -325,7 +339,7 @@ public class GController {
             stage.close();
         });
         flowPane.getChildren().add(okButton);
-        Scene scene = new Scene(flowPane, 100, 200);
+        Scene scene = new Scene(flowPane, 200, 50);
         stage.setScene(scene);
         stage.setTitle("Choose lear ^-^");
         stage.show();
@@ -459,11 +473,11 @@ public class GController {
         Stage tempStage = (Stage) gamesTable.getScene().getWindow();
         tempStage.hide();
         Stage primaryStage = new Stage();
-
         BorderPane root = new BorderPane();
-        DropShadow color = new DropShadow();
-        color.setColor(Color.PURPLE);
-        root.setEffect(color);
+        Image img = new Image("/img/game.jpg");
+        ImageView backgr = new ImageView();
+        backgr.setImage(img);
+        root.getChildren().add(backgr);
         Pane firstPane = new Pane();
         if (gamesTableFields.get(selectIndex).players.size() >= 2) {
             firstPlayer = new Label(gamesTableFields.get(selectIndex).players.get(0).name);
@@ -532,7 +546,7 @@ public class GController {
 
         primaryStage.setTitle("Meow-Meow");
         Scene scene = new Scene(root, 800, 600);
-
+        scene.getStylesheets().add("/styles/game.css");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
