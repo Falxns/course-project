@@ -497,14 +497,6 @@ public class GController {
         secondPlayer.setLayoutX(-80.0);
         secondPlayer.setLayoutY(50.0);
         secondPane.getChildren().add(secondPlayer);
-        infoLabel = new Label();
-        infoLabel.setLayoutX(250.0);
-        infoLabel.setLayoutY(30.0);
-        firstPane.getChildren().add(infoLabel);
-        moveLabel = new Label();
-        moveLabel.setLayoutX(250.0);
-        moveLabel.setLayoutY(60.0);
-        firstPane.getChildren().add(moveLabel);
         root.setLeft(firstPane);
         root.setRight(secondPane);
         retreatImage = new ImageView();
@@ -541,6 +533,14 @@ public class GController {
             }
         });
         buttonPane.getChildren().add(passButton);
+        infoLabel = new Label();
+        infoLabel.setLayoutX(250.0);
+        infoLabel.setLayoutY(50.0);
+        buttonPane.getChildren().add(infoLabel);
+        moveLabel = new Label();
+        moveLabel.setLayoutX(250.0);
+        moveLabel.setLayoutY(70.0);
+        buttonPane.getChildren().add(moveLabel);
         root.setTop(buttonPane);
         root.setBottom(handPane);
 
